@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+    <!-- font https://www.cdnfonts.com/perfect-dos-vga-437.font -->
+    <link href="https://fonts.cdnfonts.com/css/perfect-dos-vga-437" rel="stylesheet">
+    <style>
+    body {
+      font-family: 'Perfect DOS VGA 437', sans-serif;
+    }
+    canvas {
+      border: 1px solid black;
+      color: white;
+    }
+    </style>
+  </head>
+  <body>
+    Hello!
+    ! " # $ % & ' ( ) * + , - . / 0 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~ ¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ Œ œ Š š Ÿ ƒ ˆ ˜ – — ‘ ’ ‚ “ ” „ † ‡ • … ‰ ‹ › € ™ ∙
+    <!-- each char is 9x16, 80 cols, 25 rows -> 720x400 -->
+      <!-- +1px border => 801x426 -->
+    <canvas id="c" width="801" height="426">
+    </canvas>
+
+    <script>
+const chars = ['!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', '0', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~', '¡', '¢', '£', '¤', '¥', '¦', '§', '¨', '©', 'ª', '«', '¬', '®', '¯', '°', '±', '²', '³', '´', 'µ', '¶', '·', '¸', '¹', 'º', '»', '¼', '½', '¾', '¿', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', '×', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'Þ', 'ß', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', '÷', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ', 'Œ', 'œ', 'Š', 'š', 'Ÿ', 'ƒ', 'ˆ', '˜', '–', '—', '‘', '’', '‚', '“', '”', '„', '†', '‡', '•', '…', '‰', '‹', '›', '€', '™', '∙'];
+
+
+console.log(chars.length)
+
+const text_buffer = new Array(80*25);
+for (let i = 0; i < 80*25; i++ ) {
+  text_buffer[i] = 'Z';
+}
+
+text_buffer[10] = 'É';
+text_buffer[11] = 'Í';
+text_buffer[12] = 'Í';
+text_buffer[13] = 'Í';
+text_buffer[14] = 'Í';
+text_buffer[15] = 'Í';
+text_buffer[16] = 'Í';
+text_buffer[17] = 'Í';
+text_buffer[18] = 'Í';
+text_buffer[19] = 'Í';
+text_buffer[20] = 'Í';
+text_buffer[21] = 'Í';
+text_buffer[22] = 'Í';
+text_buffer[23] = 'Í';
+text_buffer[24] = '»';
+
+text_buffer[90] = 'º';
+text_buffer[91] = 'C';
+text_buffer[92] = 'o';
+text_buffer[93] = 'm';
+text_buffer[94] = 'p';
+text_buffer[95] = 'u';
+text_buffer[96] = 't';
+text_buffer[97] = 'e';
+text_buffer[98] = 'r';
+text_buffer[99] = 'B';
+text_buffer[100] = 'r';
+text_buffer[101] = 'e';
+text_buffer[102] = 'a';
+text_buffer[103] = 'd';
+text_buffer[104] = 'º';
+
+text_buffer[170] = 'È';
+text_buffer[171] = 'Í';
+text_buffer[172] = 'Í';
+text_buffer[173] = 'Í';
+text_buffer[174] = 'Í';
+text_buffer[175] = 'Í';
+text_buffer[176] = 'Í';
+text_buffer[177] = 'Í';
+text_buffer[178] = 'Í';
+text_buffer[179] = 'Í';
+text_buffer[180] = 'Í';
+text_buffer[181] = 'Í';
+text_buffer[182] = 'Í';
+text_buffer[183] = 'Í';
+text_buffer[184] = '¼';
+
+const WIDTH = 801;
+const HEIGHT = 426;
+
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+
+ctx.fillStyle = "black";
+ctx.fillRect(0,0, canvas.width, canvas.height);
+
+ctx.lineWidth = 1;
+ctx.strokeStyle = "#FFFFFF"
+
+for (let col = 0; col < 80; col++) {
+  const start = {x: col*10, y: 0};
+  const end = {x: col*10, y: canvas.height};
+  drawLines(start, end);
+}
+for (let row = 0; row < 25; row++) {
+  const start = {x: 0, y: row*17};
+  const end = {x: canvas.width, y: row*17};
+  drawLines(start, end);
+
+}
+document.fonts.ready
+  .then(() => {
+printText();
+  })
+  .catch(() => {
+    console.log("Error");
+  });
+
+function drawLines(start, end) {
+  ctx.beginPath();
+  ctx.moveTo(start.x, start.y);
+  ctx.lineTo(end.x, end.y);
+  ctx.stroke();
+}
+
+function printText() {
+  ctx.font = "16px 'Perfect DOS VGA 437', sans-serif";
+  ctx.fillStyle = "white";
+  for (let row = 0; row < 25; row++) {
+    for (let col = 0; col < 80; col++) {
+      ctx.fillText(text_buffer[row*80 + col], col*10 + 1, (row+1)*17-4);
+    }
+  }
+}
+
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function print_chars() {
+  for ( char of chars ) {
+      try {
+        ctx.fillStyle = "black";
+        ctx.fillRect(11, 1, 10, 15);
+        ctx.fillStyle = "white";
+        ctx.fillText(char, 11, 13);
+      console.log(char);
+        await sleep(100);
+      } catch {}
+    }
+}
+
+print_chars();
+
+console.log(ctx.font)
+
+    </script>
+  
+  </body>
+</html>
