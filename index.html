@@ -37,7 +37,7 @@
     </canvas>
 
    
-    <script>
+<script>
 const chars = ['!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', '0', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~', '¡', '¢', '£', '¤', '¥', '¦', '§', '¨', '©', 'ª', '«', '¬', '®', '¯', '°', '±', '²', '³', '´', 'µ', '¶', '·', '¸', '¹', 'º', '»', '¼', '½', '¾', '¿', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', '×', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'Þ', 'ß', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', '÷', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ', 'Œ', 'œ', 'Š', 'š', 'Ÿ', 'ƒ', 'ˆ', '˜', '–', '—', '‘', '’', '‚', '“', '”', '„', '†', '‡', '•', '…', '‰', '‹', '›', '€', '™', '∙'];
 
 
@@ -45,59 +45,38 @@ console.log(chars.length)
 
 const text_buffer = new Array(80*25);
 for (let i = 0; i < 80*25; i++ ) {
-  text_buffer[i] = 'Z';
+  text_buffer[i] = chars[i%chars.length];
 }
 
-text_buffer[10] = 'É';
-text_buffer[11] = 'Í';
-text_buffer[12] = 'Í';
-text_buffer[13] = 'Í';
-text_buffer[14] = 'Í';
-text_buffer[15] = 'Í';
-text_buffer[16] = 'Í';
-text_buffer[17] = 'Í';
-text_buffer[18] = 'Í';
-text_buffer[19] = 'Í';
-text_buffer[20] = 'Í';
-text_buffer[21] = 'Í';
-text_buffer[22] = 'Í';
-text_buffer[23] = 'Í';
-text_buffer[24] = '»';
 
-text_buffer[90] = 'º';
-text_buffer[91] = 'C';
-text_buffer[92] = 'o';
-text_buffer[93] = 'm';
-text_buffer[94] = 'p';
-text_buffer[95] = 'u';
-text_buffer[96] = 't';
-text_buffer[97] = 'e';
-text_buffer[98] = 'r';
-text_buffer[99] = 'B';
-text_buffer[100] = 'r';
-text_buffer[101] = 'e';
-text_buffer[102] = 'a';
-text_buffer[103] = 'd';
-text_buffer[104] = 'º';
+/**
+ print text in a box
+ too lazy to check boundaries
+*/
+function print_boxed_text(text, col, row) {
+  const TOP_LEFT_CORNER = 'É' 
+  const TOP_RIGHT_CORNER = '»';
+  const VERTICAL_SIDE = 'º';
+  const HORIZONTAL_SIDE = 'Í';
+  const BOTTOM_LEFT_CORNER = 'È';
+  const BOTTOM_RIGHT_CORNER = '¼';
+  
+  const top = TOP_LEFT_CORNER + HORIZONTAL_SIDE.repeat(text.length) + TOP_RIGHT_CORNER;
+  const middle = VERTICAL_SIDE + text + VERTICAL_SIDE;
+  const bottom = BOTTOM_LEFT_CORNER + HORIZONTAL_SIDE.repeat(text.length) + BOTTOM_RIGHT_CORNER;
+  print_text(top, col-1, row-1);
+  print_text(middle, col-1, row);
+  print_text(bottom, col-1, row+1);
 
-text_buffer[170] = 'È';
-text_buffer[171] = 'Í';
-text_buffer[172] = 'Í';
-text_buffer[173] = 'Í';
-text_buffer[174] = 'Í';
-text_buffer[175] = 'Í';
-text_buffer[176] = 'Í';
-text_buffer[177] = 'Í';
-text_buffer[178] = 'Í';
-text_buffer[179] = 'Í';
-text_buffer[180] = 'Í';
-text_buffer[181] = 'Í';
-text_buffer[182] = 'Í';
-text_buffer[183] = 'Í';
-text_buffer[184] = '¼';
+}
 
 const WIDTH = 801;
 const HEIGHT = 426;
+const FACTOR = 2;
+const ORIGIN = {
+  x:(window.innerWidth - WIDTH*FACTOR)/2,
+  y: (window.innerHeight - HEIGHT*FACTOR)/2,
+};
 
 const canvas = document.getElementById("c");
 canvas.width = window.innerWidth;
@@ -110,24 +89,40 @@ ctx.fillRect(0,0, canvas.width, canvas.height);
 ctx.lineWidth = 1;
 ctx.strokeStyle = "#FFFFFF"
 
-for (let col = 0; col < 81; col++) {
-  const start = {x: col*10, y: 0};
-  const end = {x: col*10, y: HEIGHT};
-  drawLines(start, end);
+async function draw_cols(interval_ms = 0) {
+  for (let col = 0; col < 81; col++) {
+    const start = {x: col*10*FACTOR + ORIGIN.x, y: ORIGIN.y};
+    const end = {x: ORIGIN.x + col*10*FACTOR, y: ORIGIN.y + HEIGHT*FACTOR};
+    drawLines(start, end);
+    if (interval_ms > 0 ) await sleep(interval_ms);
+  }
 }
-for (let row = 0; row < 26; row++) {
-  const start = {x: 0, y: row*17};
-  const end = {x: WIDTH, y: row*17};
-  drawLines(start, end);
+async function draw_rows(interval_ms = 0) {
+  for (let row = 0; row < 26; row++) {
+    const start = {x: ORIGIN.x, y: ORIGIN.y+row*17*FACTOR};
+    const end = {x: ORIGIN.x+WIDTH*FACTOR, y: ORIGIN.y+row*17*FACTOR};
+    drawLines(start, end);
+    if (interval_ms > 0 ) await sleep(interval_ms);
+  }
+}
+  async function draw_grid(interval_ms) {
+      await draw_rows(interval_ms);
+      await draw_cols(interval_ms/3.2);
+  }
 
-}
 document.fonts.ready
-  .then(() => {
-printText();
-  })
-  .catch(() => {
-    console.log("Error");
-  });
+.then(() => {
+  //print_boxed_text("TEXT MODE", 35, 12);
+  printText();
+  clearCanvas();
+  print_boxed_text("TEXT MODE", 35, 12);
+  draw_grid(20);
+
+  //print_text("ComputerBread", 0, 0);
+})
+.catch(() => {
+  console.log("Error");
+});
 
 function drawLines(start, end) {
   ctx.beginPath();
@@ -137,16 +132,36 @@ function drawLines(start, end) {
 }
 
 function printText() {
-  ctx.font = "16px 'Perfect DOS VGA 437', sans-serif";
+  ctx.font = 16*FACTOR + "px 'Perfect DOS VGA 437', sans-serif";
   ctx.fillStyle = "white";
   for (let row = 0; row < 25; row++) {
     for (let col = 0; col < 80; col++) {
-      ctx.fillText(text_buffer[row*80 + col], col*10 + 1, (row+1)*17-4);
+      ctx.fillText(text_buffer[row*80 + col], ORIGIN.x + (col*10 + 1)*FACTOR, ORIGIN.y + ((row+1)*17-4)*FACTOR);
     }
   }
 }
 
+function clearCanvas() {
+  ctx.fillStyle = "black";
+  // ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+/**
+ Print "text" starting at col: col, and row: row.
+ col & row start at 0.
+*/
+function print_text(text, col, row) {
+  let i = 0;
+  for (let char of text) {
 
+    ctx.fillStyle = "black";
+    ctx.fillRect(ORIGIN.x + ((col+i)*10)*FACTOR + 1, ORIGIN.y+(row*17)*FACTOR + 1, (10-1)*FACTOR, (17-1)*FACTOR);//ORIGIN.x + ((1+col+i)*10)*FACTOR - 1, ORIGIN.y+((1+row)*17)*FACTOR - 1);
+    console.log(ORIGIN.x + ((col+i)*10)*FACTOR + 1, ORIGIN.y+(row*17)*FACTOR + 2, ORIGIN.x + ((1+col+i)*10)*FACTOR - 1, ORIGIN.y+((1+row)*17)*FACTOR - 1);
+    ctx.fillStyle = "white";
+    ctx.fillText(char, ORIGIN.x + ((i+col)*10 + 1)*FACTOR, ORIGIN.y + ((row+1)*17-4)*FACTOR);
+    i++;
+  }
+}
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -164,11 +179,71 @@ async function print_chars() {
     }
 }
 
-print_chars();
+// print_chars();
 
 console.log(ctx.font)
 
-    </script>
+function drawGrowingArrow(startPos, stopPos, duration) {
+        ctx.fillStyle = "white";
+  const startTime = performance.now();
+
+  function drawFrame(timestamp) {
+    const elapsed = timestamp - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    //ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const currentX = startPos.x + (stopPos.x - startPos.x) * progress;
+    const currentY = startPos.y + (stopPos.y - startPos.y) * progress;
+
+    ctx.beginPath();
+    ctx.moveTo(startPos.x, startPos.y);
+    ctx.lineTo(currentX, currentY);
+    ctx.lineTo(currentX - 10, currentY + 10);
+    ctx.moveTo(currentX, currentY);
+    ctx.lineTo(currentX + 10, currentY + 10);
+    ctx.stroke();
+
+    if (progress < 1) {
+     requestAnimationFrame(drawFrame);
+    }
+
+  }
+
+  requestAnimationFrame(drawFrame);
+
+}
+
+function rotatePoint(point, angleInDegrees) {
+  const angleInRadians = (angleInDegrees * Math.PI) / 180;
+  const { x, y  } = point;
+  const rotatedX = x * Math.cos(angleInRadians) - y * Math.sin(angleInRadians);
+  const rotatedY = x * Math.sin(angleInRadians) + y * Math.cos(angleInRadians);
+  return { x: rotatedX, y: rotatedY  };
+}
+
+// Example usage:
+async function oj() {
+  await sleep(1000);
+  const start = { x: 50, y: 50  };
+  const stop = { x: 200, y: 200  };
+  const animationDuration = 3000; // in milliseconds
+
+  drawGrowingArrow(start, stop, animationDuration);
+  drawArrow();
+}
+oj();
+
+function drawArrow() {
+  const arrow = [{x: 0, y: 0}, {x: 10, y: 10}, {x: 20, y: 0}];
+  ctx.beginPath();
+  ctx.moveTo(arrow[0].x, arrow[0].y);
+  ctx.lineTo(arrow[1].x, arrow[1].y);
+  ctx.lineTo(arrow[2].x, arrow[2].y);
+  ctx.stroke();
+}
+
+</script>
   
   </body>
 </html>
