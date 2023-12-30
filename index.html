@@ -10,21 +10,33 @@
     <style>
     body {
       font-family: 'Perfect DOS VGA 437', sans-serif;
+      font-size: 16px;
+      margin: 0;
+      padding: 0;
     }
     canvas {
-      border: 1px solid black;
+      margin: 0;
       color: white;
+      display:block;
+      z-index: 100;
+      position: fixed;
+      top: 0;
+      left: 0;
     }
     </style>
   </head>
   <body>
+    <div style="width:100px; height: 100px; margin: 0; padding: 0; position: fixed; top: 100px; left: 100px; z-index: 0;">
+      This is necessary, otherwise the font doesn't load!
     Hello!
     ! " # $ % & ' ( ) * + , - . / 0 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~ ¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ ® ¯ ° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ Œ œ Š š Ÿ ƒ ˆ ˜ – — ‘ ’ ‚ “ ” „ † ‡ • … ‰ ‹ › € ™ ∙
+    </div>
     <!-- each char is 9x16, 80 cols, 25 rows -> 720x400 -->
       <!-- +1px border => 801x426 -->
-    <canvas id="c" width="801" height="426">
+    <canvas id="c" width="100wh" height="100vh">
     </canvas>
 
+   
     <script>
 const chars = ['!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', '0', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~', '¡', '¢', '£', '¤', '¥', '¦', '§', '¨', '©', 'ª', '«', '¬', '®', '¯', '°', '±', '²', '³', '´', 'µ', '¶', '·', '¸', '¹', 'º', '»', '¼', '½', '¾', '¿', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', '×', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'Þ', 'ß', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', '÷', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ', 'Œ', 'œ', 'Š', 'š', 'Ÿ', 'ƒ', 'ˆ', '˜', '–', '—', '‘', '’', '‚', '“', '”', '„', '†', '‡', '•', '…', '‰', '‹', '›', '€', '™', '∙'];
 
@@ -88,6 +100,8 @@ const WIDTH = 801;
 const HEIGHT = 426;
 
 const canvas = document.getElementById("c");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 const ctx = canvas.getContext("2d");
 
 ctx.fillStyle = "black";
@@ -96,14 +110,14 @@ ctx.fillRect(0,0, canvas.width, canvas.height);
 ctx.lineWidth = 1;
 ctx.strokeStyle = "#FFFFFF"
 
-for (let col = 0; col < 80; col++) {
+for (let col = 0; col < 81; col++) {
   const start = {x: col*10, y: 0};
-  const end = {x: col*10, y: canvas.height};
+  const end = {x: col*10, y: HEIGHT};
   drawLines(start, end);
 }
-for (let row = 0; row < 25; row++) {
+for (let row = 0; row < 26; row++) {
   const start = {x: 0, y: row*17};
-  const end = {x: canvas.width, y: row*17};
+  const end = {x: WIDTH, y: row*17};
   drawLines(start, end);
 
 }
