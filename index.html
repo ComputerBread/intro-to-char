@@ -49,26 +49,7 @@ for (let i = 0; i < 80*25; i++ ) {
 }
 
 
-/**
- print text in a box
- too lazy to check boundaries
-*/
-function print_boxed_text(text, col, row) {
-  const TOP_LEFT_CORNER = 'É' 
-  const TOP_RIGHT_CORNER = '»';
-  const VERTICAL_SIDE = 'º';
-  const HORIZONTAL_SIDE = 'Í';
-  const BOTTOM_LEFT_CORNER = 'È';
-  const BOTTOM_RIGHT_CORNER = '¼';
-  
-  const top = TOP_LEFT_CORNER + HORIZONTAL_SIDE.repeat(text.length) + TOP_RIGHT_CORNER;
-  const middle = VERTICAL_SIDE + text + VERTICAL_SIDE;
-  const bottom = BOTTOM_LEFT_CORNER + HORIZONTAL_SIDE.repeat(text.length) + BOTTOM_RIGHT_CORNER;
-  print_text(top, col-1, row-1);
-  print_text(middle, col-1, row);
-  print_text(bottom, col-1, row+1);
 
-}
 
 const WIDTH = 801;
 const HEIGHT = 426;
@@ -89,11 +70,32 @@ ctx.fillRect(0,0, canvas.width, canvas.height);
 ctx.lineWidth = 1;
 ctx.strokeStyle = "#FFFFFF"
 
+/**
+ print text in a box
+ too lazy to check boundaries
+*/
+function print_boxed_text(text, col, row, color = "white") {
+  const TOP_LEFT_CORNER = 'É' 
+  const TOP_RIGHT_CORNER = '»';
+  const VERTICAL_SIDE = 'º';
+  const HORIZONTAL_SIDE = 'Í';
+  const BOTTOM_LEFT_CORNER = 'È';
+  const BOTTOM_RIGHT_CORNER = '¼';
+  
+  const top = TOP_LEFT_CORNER + HORIZONTAL_SIDE.repeat(text.length) + TOP_RIGHT_CORNER;
+  const middle = VERTICAL_SIDE + text + VERTICAL_SIDE;
+  const bottom = BOTTOM_LEFT_CORNER + HORIZONTAL_SIDE.repeat(text.length) + BOTTOM_RIGHT_CORNER;
+  print_text(top, col-1, row-1, color);
+  print_text(middle, col-1, row, color);
+  print_text(bottom, col-1, row+1, color);
+
+}
+
 async function draw_cols(interval_ms = 0) {
   for (let col = 0; col < 81; col++) {
     const start = {x: col*10*FACTOR + ORIGIN.x, y: ORIGIN.y};
     const end = {x: ORIGIN.x + col*10*FACTOR, y: ORIGIN.y + HEIGHT*FACTOR};
-    drawLines(start, end);
+    drawLine(start, end);
     if (interval_ms > 0 ) await sleep(interval_ms);
   }
 }
@@ -101,7 +103,7 @@ async function draw_rows(interval_ms = 0) {
   for (let row = 0; row < 26; row++) {
     const start = {x: ORIGIN.x, y: ORIGIN.y+row*17*FACTOR};
     const end = {x: ORIGIN.x+WIDTH*FACTOR, y: ORIGIN.y+row*17*FACTOR};
-    drawLines(start, end);
+    drawLine(start, end);
     if (interval_ms > 0 ) await sleep(interval_ms);
   }
 }
@@ -112,11 +114,12 @@ async function draw_rows(interval_ms = 0) {
 
 document.fonts.ready
 .then(() => {
-  //print_boxed_text("TEXT MODE", 35, 12);
+
+  // needs the 2 following lines otherwise it's bugging for some reason
   printText();
   clearCanvas();
-  print_boxed_text("TEXT MODE", 35, 12);
-  draw_grid(20);
+
+  story1();
 
   //print_text("ComputerBread", 0, 0);
 })
@@ -124,7 +127,76 @@ document.fonts.ready
   console.log("Error");
 });
 
-function drawLines(start, end) {
+async function story1() {
+  let state = 0;
+  window.addEventListener('keyup', (e) => {
+    if (e.keyCode !== 39) {
+      return;
+    }
+
+    switch(state) {
+      case 0:
+        print_boxed_text("TEXT MODE", 35, 12);
+      break;
+
+      case 1:
+        draw_grid(0);
+      break;
+
+      case 2:
+        printText();
+        print_text("ComputerBread", 0, 0);
+        print_boxed_text("TEXT MODE", 35, 12);
+      break;
+
+      case 3:
+        clearCanvas();
+        print_boxed_text("VGA TEXT MODE", 33, 12);
+      break;
+
+      case 4:
+        draw_rows(15);
+        drawGrowingArrow(
+          {x: ORIGIN.x-20, y: ORIGIN.y},
+          {x:ORIGIN.x-20, y: ORIGIN.y+HEIGHT*FACTOR},
+          15*25
+        );
+        ctx.fillStyle = "white";
+        ctx.fillText("25", ORIGIN.x - 80, ORIGIN.y+ HEIGHT*FACTOR/2);
+      break;
+
+      case 5:
+        draw_cols(5);
+        drawGrowingArrow(
+          {x: ORIGIN.x, y: ORIGIN.y-20},
+          {x:ORIGIN.x+WIDTH*FACTOR, y: ORIGIN.y-20},
+          5*80
+        );
+        ctx.fillStyle = "white";
+        ctx.fillText("80", ORIGIN.x+WIDTH*FACTOR/2, ORIGIN.y-40);
+      break;
+
+      case 6:
+        ctx.fillStyle = "red";
+        ctx.fillText("25", ORIGIN.x - 80, ORIGIN.y+ HEIGHT*FACTOR/2);
+      break;
+      case 7:
+        ctx.fillText("80", ORIGIN.x+WIDTH*FACTOR/2, ORIGIN.y-40);
+      break;
+      case 8:
+        print_boxed_text("VGA text-buffer",32, 12, "red");
+      break;
+      case 0:
+      break;
+    }
+    state++;
+    //print_boxed_text("VGA TEXT MODE", 35, 12);
+
+  });
+
+}
+
+function drawLine(start, end) {
   ctx.beginPath();
   ctx.moveTo(start.x, start.y);
   ctx.lineTo(end.x, end.y);
@@ -150,14 +222,14 @@ function clearCanvas() {
  Print "text" starting at col: col, and row: row.
  col & row start at 0.
 */
-function print_text(text, col, row) {
+function print_text(text, col, row, color = "white") {
   let i = 0;
   for (let char of text) {
 
     ctx.fillStyle = "black";
     ctx.fillRect(ORIGIN.x + ((col+i)*10)*FACTOR + 1, ORIGIN.y+(row*17)*FACTOR + 1, (10-1)*FACTOR, (17-1)*FACTOR);//ORIGIN.x + ((1+col+i)*10)*FACTOR - 1, ORIGIN.y+((1+row)*17)*FACTOR - 1);
     console.log(ORIGIN.x + ((col+i)*10)*FACTOR + 1, ORIGIN.y+(row*17)*FACTOR + 2, ORIGIN.x + ((1+col+i)*10)*FACTOR - 1, ORIGIN.y+((1+row)*17)*FACTOR - 1);
-    ctx.fillStyle = "white";
+    ctx.fillStyle = color;
     ctx.fillText(char, ORIGIN.x + ((i+col)*10 + 1)*FACTOR, ORIGIN.y + ((row+1)*17-4)*FACTOR);
     i++;
   }
@@ -165,6 +237,7 @@ function print_text(text, col, row) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
 
 async function print_chars() {
   for ( char of chars ) {
@@ -183,9 +256,38 @@ async function print_chars() {
 
 console.log(ctx.font)
 
-function drawGrowingArrow(startPos, stopPos, duration) {
-        ctx.fillStyle = "white";
+function drawAnimation(duration) {
   const startTime = performance.now();
+  function drawFrame(timestamp) {
+    const elapsed = timestamp - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    if (progress < 1) {
+     requestAnimationFrame(drawFrame);
+    }
+
+  }
+
+  requestAnimationFrame(drawFrame);
+}
+
+function drawGrowingArrow(startPos, stopPos, duration) {
+  ctx.fillStyle = "blue";
+  const startTime = performance.now();
+
+  // calculating rotation angle
+  const adj = stopPos.x - startPos.x;
+  const opp = stopPos.y - startPos.y;
+  const hyp = Math.sqrt(adj*adj + opp*opp);
+  const rotationAngle = Math.acos(adj/hyp);
+  
+  const arrow = [{x: 0, y: -10}, {x: 10, y: 0}, {x: 0, y: 10}];
+  const rotatedArrow = [
+    rotatePoint(arrow[0], rotationAngle),
+    rotatePoint(arrow[1], rotationAngle),
+    rotatePoint(arrow[2], rotationAngle),
+  ];
+
 
   function drawFrame(timestamp) {
     const elapsed = timestamp - startTime;
@@ -193,16 +295,25 @@ function drawGrowingArrow(startPos, stopPos, duration) {
 
     //ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const currentX = startPos.x + (stopPos.x - startPos.x) * progress;
-    const currentY = startPos.y + (stopPos.y - startPos.y) * progress;
+    const x = startPos.x + (stopPos.x - startPos.x) * progress;
+    const y = startPos.y + (stopPos.y - startPos.y) * progress;
+    const arrow = [
+      {x: x+rotatedArrow[0].x, y: y+rotatedArrow[0].y},
+      {x: x+rotatedArrow[1].x, y: y+rotatedArrow[1].y},
+      {x: x+rotatedArrow[2].x, y: y+rotatedArrow[2].y},
+    ];
 
-    ctx.beginPath();
-    ctx.moveTo(startPos.x, startPos.y);
-    ctx.lineTo(currentX, currentY);
-    ctx.lineTo(currentX - 10, currentY + 10);
-    ctx.moveTo(currentX, currentY);
-    ctx.lineTo(currentX + 10, currentY + 10);
-    ctx.stroke();
+    // clear previous arrow
+    const recX  = Math.min(startPos.x, stopPos.x, arrow[0].x, arrow[1].x, arrow[2].x)-5;
+    const recY  = Math.min(startPos.y, stopPos.y, arrow[0].y, arrow[1].y, arrow[2].y)-5;
+    const maxX  = Math.max(startPos.x, stopPos.x, arrow[0].x, arrow[1].x, arrow[2].x);
+    const maxY  = Math.max(startPos.y, stopPos.y, arrow[0].y, arrow[1].y, arrow[2].y);
+    ctx.fillStyle = "black";
+    ctx.fillRect(recX, recY, maxX-recX, maxY-recY);
+
+    ctx.fillStyle = "blue";
+    drawArrow(arrow);
+    drawLine(startPos, {x, y});
 
     if (progress < 1) {
      requestAnimationFrame(drawFrame);
@@ -214,33 +325,22 @@ function drawGrowingArrow(startPos, stopPos, duration) {
 
 }
 
-function rotatePoint(point, angleInDegrees) {
-  const angleInRadians = (angleInDegrees * Math.PI) / 180;
+function rotatePoint(point, angleInRadians) {
+  //const angleInRadians = (angleInDegrees * Math.PI) / 180;
   const { x, y  } = point;
   const rotatedX = x * Math.cos(angleInRadians) - y * Math.sin(angleInRadians);
   const rotatedY = x * Math.sin(angleInRadians) + y * Math.cos(angleInRadians);
   return { x: rotatedX, y: rotatedY  };
 }
 
-// Example usage:
-async function oj() {
-  await sleep(1000);
-  const start = { x: 50, y: 50  };
-  const stop = { x: 200, y: 200  };
-  const animationDuration = 3000; // in milliseconds
-
-  drawGrowingArrow(start, stop, animationDuration);
-  drawArrow();
-}
-oj();
-
-function drawArrow() {
-  const arrow = [{x: 0, y: 0}, {x: 10, y: 10}, {x: 20, y: 0}];
+function drawArrow(arrow) {
+  // const arrow = [{x: 0, y: 0}, {x: 10, y: 10}, {x: 0, y: 20}];
   ctx.beginPath();
   ctx.moveTo(arrow[0].x, arrow[0].y);
   ctx.lineTo(arrow[1].x, arrow[1].y);
   ctx.lineTo(arrow[2].x, arrow[2].y);
   ctx.stroke();
+
 }
 
 </script>
